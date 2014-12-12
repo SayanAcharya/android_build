@@ -706,8 +706,13 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   CopyInstallTools(output_zip)
   script.UnpackPackageDir("install", "/tmp/install")
+<<<<<<< HEAD
   script.AppendExtra("set_metadata(\"/tmp/install/bin/backuptool.sh\", \"uid\", 0, \"gid\", 0, \"mode\", 0755);")
   script.AppendExtra("set_metadata(\"/tmp/install/bin/backuptool.functions\", \"uid\", 0, \"gid\", 0, \"mode\", 0644);")
+=======
+  script.SetPermissionsRecursive("/tmp/install", 0, 0, 0755, 0644, None, None)
+  script.SetPermissionsRecursive("/tmp/install/bin", 0, 0, 0755, 0755, None, None)
+>>>>>>> 478699601... build: ota: Support for install tools in /tmp/install
 
   if OPTIONS.backuptool:
     script.Mount("/system")
@@ -720,10 +725,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     system_progress -= 0.1
   if HasVendorPartition(input_zip):
     system_progress -= 0.1
-
-  if block_based:
-    common.ZipWriteStr(output_zip, "system/bin/otasigcheck.sh",
-                   ""+input_zip.read("SYSTEM/bin/otasigcheck.sh"))
 
   script.AppendExtra("if is_mounted(\"/data\") then")
   script.ValidateSignatures("data")
@@ -798,6 +799,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
+
+  device_specific.FullOTA_PostValidate()
 
   if OPTIONS.backuptool:
     script.ShowProgress(0.02, 10)

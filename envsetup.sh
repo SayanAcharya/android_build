@@ -10,6 +10,8 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
              To limit the modules being built use the syntax: mmm dir/:target1,target2.
 - mma:       Builds all of the modules in the current directory, and their dependencies.
 - mmma:      Builds all of the modules in the supplied directories, and their dependencies.
+- mms:     Short circuit builder. Quickly re-build the kernel, rootfs, boot and system images
+           without deep dependencies. Requires the full build to have run before.
 - provision: Flash device with all required partitions. Options will be passed on to fastboot.
 - cgrep:     Greps on all local C/C++ files.
 - ggrep:     Greps on all local Gradle files.
@@ -528,11 +530,11 @@ function print_lunch_menu()
     echo -e "                The"
     echo -e ""
     echo -e "                                                                       "
-    echo -e " ________                   __________             _____               "        
-    echo -e " ___  __ \___  ________________  ____/___  ___________(_)____________  " 
+    echo -e " ________                   __________             _____               "
+    echo -e " ___  __ \___  ________________  ____/___  ___________(_)____________  "
     echo -e " __  /_/ /  / / /_  ___/  _ \_  /_   _  / / /_  ___/_  /_  __ \_  __ \ "
     echo -e " _  ____// /_/ /_  /   /  __/  __/   / /_/ /_(__  )_  / / /_/ /  / / / "
-    echo -e " /_/     \__,_/ /_/    \___//_/      \__,_/ /____/ /_/  \____//_/ /_/  "                                                                 
+    echo -e " /_/     \__,_/ /_/    \___//_/      \__,_/ /____/ /_/  \____//_/ /_/  "
     echo -e "                                                                       "
     echo -e ""
     echo -e "                                                        Project"
@@ -1587,6 +1589,29 @@ function reposync() {
             ;;
         *)
             schedtool -B -n 1 -e ionice -n 1 `which repo` sync -j 4 "$@"
+            ;;
+    esac
+}
+
+function mms() {
+    local T=$(gettop)
+    if [ -z "$T" ]
+    then
+        echo "Couldn't locate the top of the tree.  Try setting TOP."
+        return 1
+    fi
+
+    case `uname -s` in
+        Darwin)
+            local NUM_CPUS=$(sysctl hw.ncpu|cut -d" " -f2)
+            ONE_SHOT_MAKEFILE="__none__" \
+                make -C $T -j $NUM_CPUS "$@"
+            ;;
+        *)
+            local NUM_CPUS=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
+            ONE_SHOT_MAKEFILE="__none__" \
+                mk_timer schedtool -B -n 1 -e ionice -n 1 \
+                make -C $T -j $NUM_CPUS "$@"
             ;;
     esac
 }

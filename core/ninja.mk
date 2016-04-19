@@ -1,6 +1,6 @@
 NINJA ?= $(shell command -v ninja)
 ifeq ($(NINJA),)
-  NINJA := prebuilts/ninja/$(HOST_PREBUILT_TAG)/ninja
+  NINJA ?= prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/ninja
 endif
 
 $(info Using '$(NINJA)' binary on '$(HOST_PREBUILT_TAG)')

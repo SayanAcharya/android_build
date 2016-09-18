@@ -706,13 +706,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   CopyInstallTools(output_zip)
   script.UnpackPackageDir("install", "/tmp/install")
-<<<<<<< HEAD
-  script.AppendExtra("set_metadata(\"/tmp/install/bin/backuptool.sh\", \"uid\", 0, \"gid\", 0, \"mode\", 0755);")
-  script.AppendExtra("set_metadata(\"/tmp/install/bin/backuptool.functions\", \"uid\", 0, \"gid\", 0, \"mode\", 0644);")
-=======
   script.SetPermissionsRecursive("/tmp/install", 0, 0, 0755, 0644, None, None)
   script.SetPermissionsRecursive("/tmp/install/bin", 0, 0, 0755, 0755, None, None)
->>>>>>> 478699601... build: ota: Support for install tools in /tmp/install
 
   if OPTIONS.backuptool:
     script.Mount("/system")
@@ -726,16 +721,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   if HasVendorPartition(input_zip):
     system_progress -= 0.1
 
-  script.AppendExtra("if is_mounted(\"/data\") then")
-  script.ValidateSignatures("data")
-  script.AppendExtra("else")
-  script.Mount("/data")
-  script.ValidateSignatures("data")
-  script.Unmount("/data")
-  script.AppendExtra("endif;")
-
-  # Place a copy of file_contexts.bin into the OTA package which will be used
-  # by the recovery program.
+# Place a copy of file_contexts.bin into the OTA package which will be used
+# by the recovery program.
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 

@@ -359,6 +359,15 @@ my_target_global_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_CFL
 my_target_global_conlyflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_CONLYFLAGS)
 my_target_global_cppflags += $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_CPPFLAGS)
 my_target_global_ldflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_LDFLAGS)
+
+    ifeq ($(my_sdclang),true)
+        ifeq ($(strip $(my_cc)),)
+            my_cc := $(my_cc_wrapper) $(SDCLANG_PATH)/clang $(SDLLVM_AE_FLAG) -Wno-vectorizer-no-neon
+        endif
+        ifeq ($(strip $(my_cxx)),)
+            my_cxx := $(my_cxx_wrapper) $(SDCLANG_PATH)/clang++ $(SDLLVM_AE_FLAG) -Wno-vectorizer-no-neon
+        endif
+    endif
 else
 my_target_global_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)TARGET_GLOBAL_CFLAGS)
 my_target_global_conlyflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)TARGET_GLOBAL_CONLYFLAGS)

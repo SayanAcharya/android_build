@@ -231,7 +231,7 @@ endif
 
 ifneq ($(USE_CCACHE),)
     # Detect if the system already has ccache installed to use instead of the prebuilt
-    ccache := $(shell which ccache)
+    ccache := $(shell command -v ccache)
 
     ifeq ($(ccache),)
         ccache := $(ANDROID_BUILD_TOP)/prebuilts/misc/$(HOST_PREBUILT_TAG)/ccache/ccache

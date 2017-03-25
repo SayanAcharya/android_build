@@ -191,7 +191,7 @@ def LoadInfoDict(input_file, input_dir=None):
     # to build images than the one running on device, such as when enabling
     # system_root_image. In that case, we must have the one for image
     # generation copied to META/.
-    fc_basename = os.path.basename(d.get("selinux_fc", "file_contexts"))
+    fc_basename = os.path.basename(d.get("selinux_fc", "file_contexts.bin"))
     fc_config = os.path.join(input_dir, "META", fc_basename)
     if d.get("system_root_image") == "true":
       assert os.path.exists(fc_config)
@@ -460,6 +460,26 @@ def _BuildBootableImage(sourcedir, fs_config_file, info_dict=None,
   if os.access(fn, os.F_OK):
     cmd.append("--base")
     cmd.append(open(fn).read().rstrip("\n"))
+
+  fn = os.path.join(sourcedir, "tagsaddr")
+  if os.access(fn, os.F_OK):
+    cmd.append("--tags-addr")
+    cmd.append(open(fn).read().rstrip("\n"))
+
+  fn = os.path.join(sourcedir, "tags_offset")
+  if os.access(fn, os.F_OK):
+    cmd.append("--tags_offset")
+    cmd.append(open(fn).read().rstrip("\n"))
+
+  fn = os.path.join(sourcedir, "ramdisk_offset")
+  if os.access(fn, os.F_OK):
+    cmd.append("--ramdisk_offset")
+    cmd.append(open(fn).read().rstrip("\n"))
+
+  fn = os.path.join(sourcedir, "dt")
+  if os.access(fn, os.F_OK):
+    cmd.append("--dt")
+    cmd.append(fn)
 
   fn = os.path.join(sourcedir, "pagesize")
   if os.access(fn, os.F_OK):

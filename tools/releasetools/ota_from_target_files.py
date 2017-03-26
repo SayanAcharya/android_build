@@ -2051,15 +2051,10 @@ def main(argv):
                                  "stash_threshold=",
                                  "gen_verify",
                                  "log_diff=",
-<<<<<<< HEAD
                                  "payload_signer=",
                                  "payload_signer_args=",
-                                 "override_device="
-=======
-                                 "backup=",
                                  "override_device=",
                                  "override_prop="
->>>>>>> 746fd34... Allow devices to specify certain ro. props via TARGET_UNIFIED_DEVICE
                              ], extra_option_handler=option_handler)
 
   if len(args) != 2:

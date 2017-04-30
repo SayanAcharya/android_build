@@ -17,7 +17,9 @@
 # Strict Aliasing #
 ###################
 LOCAL_DISABLE_STRICT := \
-        mdnsd
+	libc% \
+	libpdfiumfpdfapi \
+	mdnsd
 
 STRICT_ALIASING_FLAGS := \
 	-fstrict-aliasing \
@@ -45,18 +47,20 @@ GRAPHITE_FLAGS := \
 	-floop-strip-mine \
 	-floop-block
 
-CUSTOM_FLAGS := -O3 -g0 -DNDEBUG -fuse-ld=gold
-O_FLAGS := -O3 -O2 -Os -O1 -O0 -Og -Oz
+# We just don't want these flags
+my_cflags := $(filter-out -Wall -Werror -g -Wextra -Weverything,$(my_cflags))
+my_cppflags := $(filter-out -Wall -Werror -g -Wextra -Weverything,$(my_cppflags))
+my_conlyflags := $(filter-out -Wall -Werror -g -Wextra -Weverything,$(my_conlyflags))
 
-# Remove all flags we don't want use high level of optimization
-my_cflags := $(filter-out -Wall -Werror -g -Wextra -Weverything $(O_FLAGS),$(my_cflags)) $(CUSTOM_FLAGS)
-my_cppflags := $(filter-out -Wall -Werror -g -Wextra -Weverything $(O_FLAGS),$(my_cppflags)) $(CUSTOM_FLAGS)
-my_conlyflags := $(filter-out -Wall -Werror -g -Wextra -Weverything $(O_FLAGS),$(my_conlyflags)) $(CUSTOM_FLAGS)
+# Remove previous Optimization flags, we'll set O3 there
+my_cflags := $(filter-out -O3 -O2 -Os -O1 -O0 -Og -Oz,$(my_cflags)) -O3 -g0 -DNDEBUG
+my_conlyflags := $(filter-out -O3 -O2 -Os -O1 -O0 -Og -Oz,$(my_conlyflags)) -O3 -g0 -DNDEBUG
+my_cppflags := $(filter-out -O3 -O2 -Os -O1 -O0 -Og -Oz,$(my_cppflags)) -O3 -g0 -DNDEBUG
 
 # IPA
 ifndef LOCAL_IS_HOST_MODULE
   ifeq (,$(filter true,$(my_clang)))
-    my_cflags += -fipa-pta
+    my_cflags += -fipa-sra -fipa-pta -fipa-cp -fipa-cp-clone
   else
     my_cflags += -analyze -analyzer-purge
   endif
@@ -66,19 +70,17 @@ ifeq ($(STRICT_ALIASING),true)
   # Remove the no-strict-aliasing flags
   my_cflags := $(filter-out -fno-strict-aliasing,$(my_cflags))
   ifneq (1,$(words $(filter $(LOCAL_DISABLE_STRICT),$(LOCAL_MODULE))))
-    ifeq (,$(filter true,$(my_clang)))
-      my_cflags += $(STRICT_ALIASING_FLAGS) $(STRICT_GCC_LEVEL)
+    ifneq ($(LOCAL_CLANG),false)
+      my_cflags += $(STRICT_ALIASING_FLAGS) $(STRICT_GLANG_LEVEL)
     else
-      my_cflags += $(STRICT_ALIASING_FLAGS) $(STRICT_CLANG_LEVEL)
+      my_cflags += $(STRICT_ALIASING_FLAGS) $(STRICT_GCC_LEVEL)
     endif
   endif
 endif
 
-ifndef LOCAL_IS_HOST_MODULE
-  ifeq ($(GRAPHITE_OPTS),true)
-    # Enable graphite only on GCC
-    ifneq ($(LOCAL_CLANG),true)
-      my_cflags += $(GRAPHITE_FLAGS)
-    endif
+ifeq ($(GRAPHITE_OPTS),true)
+  # Enable graphite only on GCC
+  ifneq ($(LOCAL_CLANG),false)
+    my_cflags += $(GRAPHITE_FLAGS)
   endif
 endif

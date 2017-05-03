@@ -334,14 +334,17 @@ def main():
 
     for repository in repositories:
         repo_name = repository['name']
-
-        if not (repo_name.startswith("device_") and
+        cond = repo_name.startswith("android_device_") or repo_name.startswith("device_")
+        if not (cond and
                 repo_name.endswith("_" + device)):
             continue
-        print("Found repository: %s" % repository['name'])
+        print("Found repository: %s" % repo_name)
 
         fallback_branch = detect_revision(repository)
-        manufacturer = repo_name[7:-(len(device)+1)]
+        if (repo_name.startswith("android_device_")):
+            manufacturer = repo_name[15:-(len(device)+1)]
+        else:
+            manufacturer = repo_name[7:-(len(device)+1)]
         repo_path = "device/%s/%s" % (manufacturer, device)
         adding = [{'repository': repo_name, 'target_path': repo_path}]
 

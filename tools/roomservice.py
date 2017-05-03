@@ -45,8 +45,8 @@ default_manifest = ".repo/manifest.xml"
 custom_local_manifest = ".repo/local_manifests/purenexus_localmanifest.xml"
 custom_default_revision = "n-mr2"
 custom_dependencies = "aosp.dependencies"
-org_manifest = "purenexusproject-mod"  # leave empty if org is provided in manifest
-org_display = "PureNexusProject"  # needed for displaying
+org_manifest = "purenexus-mod"  # leave empty if org is provided in manifest
+org_display = "PureNexusProject-Mod"  # needed for displaying
 
 github_auth = None
 
@@ -159,25 +159,25 @@ def add_to_manifest(repos, fallback_branch=None):
     for repo in repos:
         repo_name = repo['repository']
         repo_target = repo['target_path']
-	if 'branch' in repo:
-	    repo_branch=repo['branch']
-	else:
-	    repo_branch=custom_default_revision
+        if 'branch' in repo:
+            repo_branch=repo['branch']
+        else:
+            repo_branch=custom_default_revision
 
-	if 'remote' in repo:
-	    repo_remote = repo['remote']
-	else:
-	    repo_remote=org_manifest
+        if 'remote' in repo:
+            repo_remote = repo['remote']
+        else:
+            repo_remote=org_manifest
 
         if is_in_manifest(repo_target):
             print('already exists: %s' % repo_target)
             continue
 
-	if repo_remote is None:
-	    repo_remote="github"
+        if repo_remote is None:
+            repo_remote="github"
 
-	if "/" not in repo_name and repo_remote is not org_manifest:
-	    repo_name = os.path.join(org_display, repo_name)
+        if "/" not in repo_name and repo_remote is not org_manifest:
+            repo_name = os.path.join(org_display, repo_name)
 
         print('Adding dependency: %s -> %s' % (repo_name, repo_target))
 

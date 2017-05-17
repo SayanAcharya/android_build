@@ -22,7 +22,7 @@ LOCAL_DISABLE_STRICT := \
 	mdnsd
 
 STRICT_ALIASING_FLAGS := \
-	-fstrict-aliasing \
+	-fstrict-aliasing -O3 \
 	-Werror=strict-aliasing
 
 STRICT_GCC_LEVEL := \

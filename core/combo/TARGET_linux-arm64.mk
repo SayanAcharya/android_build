@@ -34,7 +34,7 @@ TARGET_ARCH_VARIANT := armv8
 endif
 
 # Decouple NDK library selection with platform compiler version
-TARGET_NDK_GCC_VERSION := 4.9
+TARGET_NDK_GCC_VERSION := snapdragonclang3.8
 
 ifeq ($(strip $(TARGET_GCC_VERSION_EXP)),)
 TARGET_GCC_VERSION := 6.x
@@ -70,9 +70,6 @@ $(call _gen_toc_command_for_elf,$(1),$(2))
 endef
 
 TARGET_NO_UNDEFINED_LDFLAGS := -Wl,--no-undefined
-
-TARGET_GLOBAL_CFLAGS += \
-    -fno-strict-aliasing \
 
 TARGET_GLOBAL_CFLAGS += \
 			-fstack-protector-strong \

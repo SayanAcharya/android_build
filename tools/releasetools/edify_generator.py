@@ -243,7 +243,7 @@ class EdifyGenerator(object):
       self.mounts.add(p.mount_point)
 
   def Unmount(self, mount_point):
-    """Unmount the partiiton with the given mount_point."""
+    """Unmount the partition with the given mount_point."""
     if mount_point in self.mounts:
       self.mounts.remove(mount_point)
       self.script.append('unmount("%s");' % (mount_point,))

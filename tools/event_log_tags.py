@@ -17,119 +17,121 @@
 import re
 import sys
 
-class Tag(object):
-  __slots__ = ["tagnum", "tagname", "description", "filename", "linenum"]
 
-  def __init__(self, tagnum, tagname, description, filename, linenum):
-    self.tagnum = tagnum
-    self.tagname = tagname
-    self.description = description
-    self.filename = filename
-    self.linenum = linenum
+class Tag(object):
+    __slots__ = ["tagnum", "tagname", "description", "filename", "linenum"]
+
+    def __init__(self, tagnum, tagname, description, filename, linenum):
+        self.tagnum = tagnum
+        self.tagname = tagname
+        self.description = description
+        self.filename = filename
+        self.linenum = linenum
 
 
 class TagFile(object):
-  """Read an input event-log-tags file."""
-  def AddError(self, msg, linenum=None):
-    if linenum is None:
-      linenum = self.linenum
-    self.errors.append((self.filename, linenum, msg))
+    """Read an input event-log-tags file."""
 
-  def AddWarning(self, msg, linenum=None):
-    if linenum is None:
-      linenum = self.linenum
-    self.warnings.append((self.filename, linenum, msg))
+    def AddError(self, msg, linenum=None):
+        if linenum is None:
+            linenum = self.linenum
+        self.errors.append((self.filename, linenum, msg))
 
-  def __init__(self, filename, file_object=None):
-    """'filename' is the name of the file (included in any error
-    messages).  If 'file_object' is None, 'filename' will be opened
-    for reading."""
-    self.errors = []
-    self.warnings = []
-    self.tags = []
-    self.options = {}
+    def AddWarning(self, msg, linenum=None):
+        if linenum is None:
+            linenum = self.linenum
+        self.warnings.append((self.filename, linenum, msg))
 
-    self.filename = filename
-    self.linenum = 0
+    def __init__(self, filename, file_object=None):
+        """'filename' is the name of the file (included in any error
+        messages).  If 'file_object' is None, 'filename' will be opened
+        for reading."""
+        self.errors = []
+        self.warnings = []
+        self.tags = []
+        self.options = {}
 
-    if file_object is None:
-      try:
-        file_object = open(filename, "rb")
-      except (IOError, OSError), e:
-        self.AddError(str(e))
-        return
+        self.filename = filename
+        self.linenum = 0
 
-    try:
-      for self.linenum, line in enumerate(file_object):
-        self.linenum += 1
+        if file_object is None:
+            try:
+                file_object = open(filename, "rb")
+            except (IOError, OSError), e:
+                self.AddError(str(e))
+                return
 
-        line = line.strip()
-        if not line or line[0] == '#': continue
-        parts = re.split(r"\s+", line, 2)
+        try:
+            for self.linenum, line in enumerate(file_object):
+                self.linenum += 1
 
-        if len(parts) < 2:
-          self.AddError("failed to parse \"%s\"" % (line,))
-          continue
+                line = line.strip()
+                if not line or line[0] == '#': continue
+                parts = re.split(r"\s+", line, 2)
 
-        if parts[0] == "option":
-          self.options[parts[1]] = parts[2:]
-          continue
+                if len(parts) < 2:
+                    self.AddError("failed to parse \"%s\"" % (line,))
+                    continue
 
-        if parts[0] == "?":
-          tag = None
-        else:
-          try:
-            tag = int(parts[0])
-          except ValueError:
-            self.AddError("\"%s\" isn't an integer tag or '?'" % (parts[0],))
-            continue
+                if parts[0] == "option":
+                    self.options[parts[1]] = parts[2:]
+                    continue
 
-        tagname = parts[1]
-        if len(parts) == 3:
-          description = parts[2]
-        else:
-          description = None
+                if parts[0] == "?":
+                    tag = None
+                else:
+                    try:
+                        tag = int(parts[0])
+                    except ValueError:
+                        self.AddError("\"%s\" isn't an integer tag or '?'" % (parts[0],))
+                        continue
 
-        if description:
-          # EventLog.java checks that the description field is
-          # surrounded by parens, so we should too (to avoid a runtime
-          # crash from badly-formatted descriptions).
-          if not re.match(r"\(.*\)\s*$", description):
-            self.AddError("tag \"%s\" has unparseable description" % (tagname,))
-            continue
+                tagname = parts[1]
+                if len(parts) == 3:
+                    description = parts[2]
+                else:
+                    description = None
 
-        self.tags.append(Tag(tag, tagname, description,
-                             self.filename, self.linenum))
-    except (IOError, OSError), e:
-      self.AddError(str(e))
+                if description:
+                    # EventLog.java checks that the description field is
+                    # surrounded by parens, so we should too (to avoid a runtime
+                    # crash from badly-formatted descriptions).
+                    if not re.match(r"\(.*\)\s*$", description):
+                        self.AddError("tag \"%s\" has unparseable description" % (tagname,))
+                        continue
+
+                self.tags.append(Tag(tag, tagname, description,
+                                     self.filename, self.linenum))
+        except (IOError, OSError), e:
+            self.AddError(str(e))
 
 
 def BooleanFromString(s):
-  """Interpret 's' as a boolean and return its value.  Raise
-  ValueError if it's not something we can interpret as true or
-  false."""
-  s = s.lower()
-  if s in ("true", "t", "1", "on", "yes", "y"):
-    return True
-  if s in ("false", "f", "0", "off", "no", "n"):
-    return False
-  raise ValueError("'%s' not a valid boolean" % (s,))
+    """Interpret 's' as a boolean and return its value.  Raise
+    ValueError if it's not something we can interpret as true or
+    false."""
+    s = s.lower()
+    if s in ("true", "t", "1", "on", "yes", "y"):
+        return True
+    if s in ("false", "f", "0", "off", "no", "n"):
+        return False
+    raise ValueError("'%s' not a valid boolean" % (s,))
 
 
 def WriteOutput(output_file, data):
-  """Write 'data' to the given output filename (which may be None to
-  indicate stdout).  Emit an error message and die on any failure.
-  'data' may be a string or a StringIO object."""
-  if not isinstance(data, str):
-    data = data.getvalue()
-  try:
-    if output_file is None:
-      out = sys.stdout
-      output_file = "<stdout>"
-    else:
-      out = open(output_file, "wb")
-    out.write(data)
-    out.close()
-  except (IOError, OSError), e:
-    print >> sys.stderr, "failed to write %s: %s" % (output_file, e)
-    sys.exit(1)
+    """Write 'data' to the given output filename (which may be None to
+    indicate stdout).  Emit an error message and die on any failure.
+    'data' may be a string or a StringIO object."""
+    if not isinstance(data, str):
+        data = data.getvalue()
+    try:
+        if output_file is None:
+            out = sys.stdout
+            output_file = "<stdout>"
+        else:
+            out = open(output_file, "wb")
+        out.write(data)
+        out.close()
+    except (IOError, OSError), e:
+        print >> sys.stderr, "failed to write %s: %s" % (output_file, e)
+        sys.exit(1)

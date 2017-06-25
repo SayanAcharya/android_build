@@ -29,13 +29,15 @@ public abstract class A extends Parent implements Parent.Interface, SomeInterfac
 
     public void method() {
     }
+
     public abstract String[] stringArrayMethod() throws java.io.IOException;
 
     public class Inner {
+        int field;
+
         int method() {
             return 1;
         }
-        int field;
     }
 }
 

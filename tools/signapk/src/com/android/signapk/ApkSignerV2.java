@@ -45,7 +45,7 @@ import java.util.Set;
 
 /**
  * APK Signature Scheme v2 signer.
- *
+ * <p>
  * <p>APK Signature Scheme v2 is a whole-file signature scheme which aims to protect every single
  * bit of the APK, as opposed to the JAR Signature Scheme which protects only the names and
  * uncompressed contents of ZIP entries.
@@ -81,7 +81,7 @@ public abstract class ApkSignerV2 {
      * {@code .SF} file header section attribute indicating that the APK is signed not just with
      * JAR signature scheme but also with APK Signature Scheme v2 or newer. This attribute
      * facilitates v2 signature stripping detection.
-     *
+     * <p>
      * <p>The attribute contains a comma-separated set of signature scheme IDs.
      */
     public static final String SF_ATTRIBUTE_ANDROID_APK_SIGNED_NAME = "X-Android-APK-Signed";
@@ -93,55 +93,36 @@ public abstract class ApkSignerV2 {
     private static final int CONTENT_DIGESTED_CHUNK_MAX_SIZE_BYTES = 1024 * 1024;
 
     private static final byte[] APK_SIGNING_BLOCK_MAGIC =
-          new byte[] {
-              0x41, 0x50, 0x4b, 0x20, 0x53, 0x69, 0x67, 0x20,
-              0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x20, 0x34, 0x32,
-          };
+            new byte[]{
+                    0x41, 0x50, 0x4b, 0x20, 0x53, 0x69, 0x67, 0x20,
+                    0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x20, 0x34, 0x32,
+            };
     private static final int APK_SIGNATURE_SCHEME_V2_BLOCK_ID = 0x7109871a;
 
-    private ApkSignerV2() {}
-
-    /**
-     * Signer configuration.
-     */
-    public static final class SignerConfig {
-        /** Private key. */
-        public PrivateKey privateKey;
-
-        /**
-         * Certificates, with the first certificate containing the public key corresponding to
-         * {@link #privateKey}.
-         */
-        public List<X509Certificate> certificates;
-
-        /**
-         * List of signature algorithms with which to sign (see {@code SIGNATURE_...} constants).
-         */
-        public List<Integer> signatureAlgorithms;
+    private ApkSignerV2() {
     }
 
     /**
      * Signs the provided APK using APK Signature Scheme v2 and returns the signed APK as a list of
      * consecutive chunks.
-     *
+     * <p>
      * <p>NOTE: To enable APK signature verifier to detect v2 signature stripping, header sections
      * of META-INF/*.SF files of APK being signed must contain the
      * {@code X-Android-APK-Signed: true} attribute.
      *
-     * @param inputApk contents of the APK to be signed. The APK starts at the current position
-     *        of the buffer and ends at the limit of the buffer.
+     * @param inputApk      contents of the APK to be signed. The APK starts at the current position
+     *                      of the buffer and ends at the limit of the buffer.
      * @param signerConfigs signer configurations, one for each signer.
-     *
-     * @throws ApkParseException if the APK cannot be parsed.
+     * @throws ApkParseException   if the APK cannot be parsed.
      * @throws InvalidKeyException if a signing key is not suitable for this signature scheme or
-     *         cannot be used in general.
-     * @throws SignatureException if an error occurs when computing digests of generating
-     *         signatures.
+     *                             cannot be used in general.
+     * @throws SignatureException  if an error occurs when computing digests of generating
+     *                             signatures.
      */
     public static ByteBuffer[] sign(
             ByteBuffer inputApk,
             List<SignerConfig> signerConfigs)
-                    throws ApkParseException, InvalidKeyException, SignatureException {
+            throws ApkParseException, InvalidKeyException, SignatureException {
         // Slice/create a view in the inputApk to make sure that:
         // 1. inputApk is what's between position and limit of the original inputApk, and
         // 2. changes to position, limit, and byte order are not reflected in the original.
@@ -210,7 +191,7 @@ public abstract class ApkSignerV2 {
             contentDigests =
                     computeContentDigests(
                             contentDigestAlgorithms,
-                            new ByteBuffer[] {beforeCentralDir, centralDir, eocd});
+                            new ByteBuffer[]{beforeCentralDir, centralDir, eocd});
         } catch (DigestException e) {
             throw new SignatureException("Failed to compute digests of APK", e);
         }
@@ -236,11 +217,11 @@ public abstract class ApkSignerV2 {
         eocd.clear();
 
         // Insert APK Signing Block immediately before the ZIP Central Directory.
-        return new ByteBuffer[] {
-            beforeCentralDir,
-            apkSigningBlock,
-            centralDir,
-            eocd,
+        return new ByteBuffer[]{
+                beforeCentralDir,
+                apkSigningBlock,
+                centralDir,
+                eocd,
         };
     }
 
@@ -365,9 +346,9 @@ public abstract class ApkSignerV2 {
 
         int resultSize =
                 8 // size
-                + 8 + 4 + apkSignatureSchemeV2Block.length // v2Block as ID-value pair
-                + 8 // size
-                + 16 // magic
+                        + 8 + 4 + apkSignatureSchemeV2Block.length // v2Block as ID-value pair
+                        + 8 // size
+                        + 16 // magic
                 ;
         ByteBuffer result = ByteBuffer.allocate(resultSize);
         result.order(ByteOrder.LITTLE_ENDIAN);
@@ -407,8 +388,8 @@ public abstract class ApkSignerV2 {
         }
 
         return encodeAsSequenceOfLengthPrefixedElements(
-                new byte[][] {
-                    encodeAsSequenceOfLengthPrefixedElements(signerBlocks),
+                new byte[][]{
+                        encodeAsSequenceOfLengthPrefixedElements(signerBlocks),
                 });
     }
 
@@ -438,9 +419,9 @@ public abstract class ApkSignerV2 {
             if (contentDigest == null) {
                 throw new RuntimeException(
                         getContentDigestAlgorithmJcaDigestAlgorithm(contentDigestAlgorithm)
-                        + " content digest for "
-                        + getSignatureAlgorithmJcaSignatureAlgorithm(signatureAlgorithm)
-                        + " not computed");
+                                + " content digest for "
+                                + getSignatureAlgorithmJcaSignatureAlgorithm(signatureAlgorithm)
+                                + " not computed");
             }
             digests.add(Pair.create(signatureAlgorithm, contentDigest));
         }
@@ -456,11 +437,11 @@ public abstract class ApkSignerV2 {
         // * length-prefixed sequence of length-prefixed additional attributes:
         //   * uint32: ID
         //   * (length - 4) bytes: value
-        signer.signedData = encodeAsSequenceOfLengthPrefixedElements(new byte[][] {
-            encodeAsSequenceOfLengthPrefixedPairsOfIntAndLengthPrefixedBytes(signedData.digests),
-            encodeAsSequenceOfLengthPrefixedElements(signedData.certificates),
-            // additional attributes
-            new byte[0],
+        signer.signedData = encodeAsSequenceOfLengthPrefixedElements(new byte[][]{
+                encodeAsSequenceOfLengthPrefixedPairsOfIntAndLengthPrefixedBytes(signedData.digests),
+                encodeAsSequenceOfLengthPrefixedElements(signedData.certificates),
+                // additional attributes
+                new byte[0],
         });
         signer.publicKey = encodedPublicKey;
         signer.signatures = new ArrayList<>();
@@ -514,25 +495,12 @@ public abstract class ApkSignerV2 {
         //   * length-prefixed bytes: signature of signed data
         // * length-prefixed bytes: public key (X.509 SubjectPublicKeyInfo, ASN.1 DER encoded)
         return encodeAsSequenceOfLengthPrefixedElements(
-                new byte[][] {
-                    signer.signedData,
-                    encodeAsSequenceOfLengthPrefixedPairsOfIntAndLengthPrefixedBytes(
-                            signer.signatures),
-                    signer.publicKey,
+                new byte[][]{
+                        signer.signedData,
+                        encodeAsSequenceOfLengthPrefixedPairsOfIntAndLengthPrefixedBytes(
+                                signer.signatures),
+                        signer.publicKey,
                 });
-    }
-
-    private static final class V2SignatureSchemeBlock {
-        private static final class Signer {
-            public byte[] signedData;
-            public List<Pair<Integer, byte[]>> signatures;
-            public byte[] publicKey;
-        }
-
-        private static final class SignedData {
-            public List<Pair<Integer, byte[]>> digests;
-            public List<byte[]> certificates;
-        }
     }
 
     private static byte[] encodePublicKey(PublicKey publicKey) throws InvalidKeyException {
@@ -587,7 +555,7 @@ public abstract class ApkSignerV2 {
             result.put(element);
         }
         return result.array();
-      }
+    }
 
     private static byte[] encodeAsSequenceOfLengthPrefixedPairsOfIntAndLengthPrefixedBytes(
             List<Pair<Integer, byte[]>> sequence) {
@@ -610,7 +578,7 @@ public abstract class ApkSignerV2 {
     /**
      * Relative <em>get</em> method for reading {@code size} number of bytes from the current
      * position of this buffer.
-     *
+     * <p>
      * <p>This method reads the next {@code size} bytes at this buffer's current position,
      * returning them as a {@code ByteBuffer} with start set to 0, limit and capacity set to
      * {@code size}, byte order set to this buffer's byte order; and then increments the position by
@@ -638,7 +606,7 @@ public abstract class ApkSignerV2 {
     }
 
     private static Pair<String, ? extends AlgorithmParameterSpec>
-            getSignatureAlgorithmJcaSignatureAlgorithm(int sigAlgorithm) {
+    getSignatureAlgorithmJcaSignatureAlgorithm(int sigAlgorithm) {
         switch (sigAlgorithm) {
             case SIGNATURE_RSA_PSS_WITH_SHA256:
                 return Pair.create(
@@ -709,6 +677,40 @@ public abstract class ApkSignerV2 {
             default:
                 throw new IllegalArgumentException(
                         "Unknown content digest algorthm: " + digestAlgorithm);
+        }
+    }
+
+    /**
+     * Signer configuration.
+     */
+    public static final class SignerConfig {
+        /**
+         * Private key.
+         */
+        public PrivateKey privateKey;
+
+        /**
+         * Certificates, with the first certificate containing the public key corresponding to
+         * {@link #privateKey}.
+         */
+        public List<X509Certificate> certificates;
+
+        /**
+         * List of signature algorithms with which to sign (see {@code SIGNATURE_...} constants).
+         */
+        public List<Integer> signatureAlgorithms;
+    }
+
+    private static final class V2SignatureSchemeBlock {
+        private static final class Signer {
+            public byte[] signedData;
+            public List<Pair<Integer, byte[]>> signatures;
+            public byte[] publicKey;
+        }
+
+        private static final class SignedData {
+            public List<Pair<Integer, byte[]>> digests;
+            public List<byte[]> certificates;
         }
     }
 

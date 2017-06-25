@@ -19,5 +19,7 @@ package com.android.stubs;
 public enum InterfaceEnum implements Parent.Interface {
     VAL;
     public static final Object OBJECT = new Object();
-    public void method() { }
+
+    public void method() {
+    }
 }

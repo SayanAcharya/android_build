@@ -20,7 +20,6 @@ Generate the Android notice files, including both text and html files.
 
 -h to display this usage message and exit.
 """
-from collections import defaultdict
 import getopt
 import hashlib
 import itertools
@@ -28,6 +27,7 @@ import os
 import os.path
 import re
 import sys
+from collections import defaultdict
 
 MD5_BLOCKSIZE = 1024 * 1024
 HTML_ESCAPE_TABLE = {
@@ -36,21 +36,21 @@ HTML_ESCAPE_TABLE = {
     "'": "&apos;",
     ">": "&gt;",
     "<": "&lt;",
-    }
+}
 
 try:
-  opts, args = getopt.getopt(sys.argv[1:], "h")
+    opts, args = getopt.getopt(sys.argv[1:], "h")
 except getopt.GetoptError, err:
     print str(err)
     print __doc__
     sys.exit(2)
 
 for o, a in opts:
-  if o == "-h":
-    print __doc__
-    sys.exit(2)
-  else:
-    print >> sys.stderr, "unhandled option %s" % (o,)
+    if o == "-h":
+        print __doc__
+        sys.exit(2)
+    else:
+        print >> sys.stderr, "unhandled option %s" % (o,)
 
 if len(args) != 4:
     print """need exactly four arguments, the two output files, the file title
@@ -58,8 +58,10 @@ if len(args) != 4:
     print __doc__
     sys.exit(1)
 
+
 def hexify(s):
-    return ("%02x"*len(s)) % tuple(map(ord, s))
+    return ("%02x" * len(s)) % tuple(map(ord, s))
+
 
 def md5sum(filename):
     """Calculate an MD5 of the file given by FILENAME,
@@ -79,9 +81,10 @@ def md5sum(filename):
 
 def html_escape(text):
     """Produce entities within text."""
-    return "".join(HTML_ESCAPE_TABLE.get(c,c) for c in text)
+    return "".join(HTML_ESCAPE_TABLE.get(c, c) for c in text)
 
-HTML_OUTPUT_CSS="""
+
+HTML_OUTPUT_CSS = """
 <style type="text/css">
 body { padding: 0; font-family: sans-serif; }
 .same-license { background-color: #eeeeee; border-top: 20px solid white; padding: 10px; }
@@ -89,6 +92,7 @@ body { padding: 0; font-family: sans-serif; }
 .file-list { margin-left: 1em; color: blue; }
 </style>
 """
+
 
 def combine_notice_files_html(file_hash, input_dir, output_filename):
     """Combine notice files in FILE_HASH and output a HTML version to OUTPUT_FILENAME."""
@@ -101,7 +105,7 @@ def combine_notice_files_html(file_hash, input_dir, output_filename):
     id_count = 0
     for value in file_hash:
         for filename in value:
-             id_table[filename] = id_count
+            id_table[filename] = id_count
         id_count += 1
 
     # Open the output file, and output the header pieces
@@ -121,12 +125,13 @@ def combine_notice_files_html(file_hash, input_dir, output_filename):
     # Print out a nice table of contents
     for filename in sorted_filenames:
         stripped_filename = SRC_DIR_STRIP_RE.sub(r"\1", filename)
-        print >> output_file, '<li><a href="#id%d">%s</a></li>' % (id_table.get(filename), stripped_filename)
+        print >> output_file, '<li><a href="#id%d">%s</a></li>' % (
+            id_table.get(filename), stripped_filename)
 
     print >> output_file, "</ul>"
     print >> output_file, "</div><!-- table of contents -->"
     # Output the individual notice file lists
-    print >>output_file, '<table cellpadding="0" cellspacing="0" border="0">'
+    print >> output_file, '<table cellpadding="0" cellspacing="0" border="0">'
     for value in file_hash:
         print >> output_file, '<tr id="id%d"><td class="same-license">' % id_table.get(value[0])
         print >> output_file, '<div class="label">Notices for file(s):</div>'
@@ -148,6 +153,7 @@ def combine_notice_files_html(file_hash, input_dir, output_filename):
     print >> output_file, "</body></html>"
     output_file.close()
 
+
 def combine_notice_files_text(file_hash, input_dir, output_filename, file_title):
     """Combine notice files in FILE_HASH and output a text version to OUTPUT_FILENAME."""
 
@@ -155,13 +161,14 @@ def combine_notice_files_text(file_hash, input_dir, output_filename, file_title)
     output_file = open(output_filename, "wb")
     print >> output_file, file_title
     for value in file_hash:
-      print >> output_file, "============================================================"
-      print >> output_file, "Notices for file(s):"
-      for filename in value:
-        print >> output_file, SRC_DIR_STRIP_RE.sub(r"\1", filename)
-      print >> output_file, "------------------------------------------------------------"
-      print >> output_file, open(value[0]).read()
+        print >> output_file, "============================================================"
+        print >> output_file, "Notices for file(s):"
+        for filename in value:
+            print >> output_file, SRC_DIR_STRIP_RE.sub(r"\1", filename)
+        print >> output_file, "------------------------------------------------------------"
+        print >> output_file, open(value[0]).read()
     output_file.close()
+
 
 def main(args):
     txt_output_file = args[0]
@@ -184,6 +191,7 @@ def main(args):
     combine_notice_files_html(filesets, input_dir, html_output_file)
     print "Combining NOTICE files into text"
     combine_notice_files_text(filesets, input_dir, txt_output_file, file_title)
+
 
 if __name__ == "__main__":
     main(args)

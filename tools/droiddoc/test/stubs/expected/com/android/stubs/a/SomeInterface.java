@@ -1,4 +1,4 @@
 package com.android.stubs.a;
-public interface SomeInterface
-{
+
+public interface SomeInterface {
 }

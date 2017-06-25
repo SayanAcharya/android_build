@@ -25,16 +25,12 @@ public class Parent {
     public static final char public_static_final_char = '\u1234';
     public static final float public_static_final_float = 42.1f;
     public static final double public_static_final_double = 42.2;
-    public static int public_static_int = 1;
     public static final String public_static_final_String = "ps\u1234fS";
-    public static String public_static_String = "psS";
-    public static Parent public_static_Parent = new Parent();
     public static final Parent public_static_final_Parent = new Parent();
     public static final Parent public_static_final_Parent_null = null;
-
-    public interface Interface {
-        void method();
-    }
+    public static int public_static_int = 1;
+    public static String public_static_String = "psS";
+    public static Parent public_static_Parent = new Parent();
 
     public Parent() {
     }
@@ -53,8 +49,14 @@ public class Parent {
     void packagePrivateMethod() {
     }
 
-    /** @hide */
+    /**
+     * @hide
+     */
     public void hiddenMethod() {
+    }
+
+    public interface Interface {
+        void method();
     }
 }
 

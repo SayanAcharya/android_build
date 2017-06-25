@@ -16,7 +16,9 @@
 
 package com.android.stubs.c;
 
-/** @hide */
+/**
+ * @hide
+ */
 public class HiddenOuter {
 
     public class NotHiddenInner {

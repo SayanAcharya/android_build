@@ -15,45 +15,50 @@
 # limitations under the License.
 #
 
-import cgi, os, string, sys
+import cgi
+import os
+import string
+import sys
+
 
 def IsDifferent(row):
-  val = None
-  for v in row:
-    if v:
-      if not val:
-        val = v
-      else:
-        if val != v:
-          return True
-  return False
+    val = None
+    for v in row:
+        if v:
+            if not val:
+                val = v
+            else:
+                if val != v:
+                    return True
+    return False
+
 
 def main(argv):
-  inputs = argv[1:]
-  data = {}
-  index = 0
-  for input in inputs:
-    f = file(input, "r")
-    lines = f.readlines()
-    f.close()
-    lines = map(string.split, lines)
-    lines = map(lambda (x,y): (y,int(x)), lines)
-    for fn,sz in lines:
-      if not data.has_key(fn):
-        data[fn] = {}
-      data[fn][index] = sz
-    index = index + 1
-  rows = []
-  for fn,sizes in data.iteritems():
-    row = [fn]
-    for i in range(0,index):
-      if sizes.has_key(i):
-        row.append(sizes[i])
-      else:
-        row.append(None)
-    rows.append(row)
-  rows = sorted(rows, key=lambda x: x[0])
-  print """<html>
+    inputs = argv[1:]
+    data = {}
+    index = 0
+    for input in inputs:
+        f = file(input, "r")
+        lines = f.readlines()
+        f.close()
+        lines = map(string.split, lines)
+        lines = map(lambda (x, y): (y, int(x)), lines)
+        for fn, sz in lines:
+            if not data.has_key(fn):
+                data[fn] = {}
+            data[fn][index] = sz
+        index = index + 1
+    rows = []
+    for fn, sizes in data.iteritems():
+        row = [fn]
+        for i in range(0, index):
+            if sizes.has_key(i):
+                row.append(sizes[i])
+            else:
+                row.append(None)
+        rows.append(row)
+    rows = sorted(rows, key=lambda x: x[0])
+    print """<html>
     <head>
       <style type="text/css">
         .fn, .sz, .z, .d {
@@ -79,28 +84,27 @@ def main(argv):
     </head>
     <body>
   """
-  print "<table>"
-  print "<tr>"
-  for input in inputs:
-    combo = input.split(os.path.sep)[1]
-    print "  <td class='fn'>%s</td>" % cgi.escape(combo)
-  print "</tr>"
-
-  for row in rows:
+    print "<table>"
     print "<tr>"
-    for sz in row[1:]:
-      if not sz:
-        print "  <td class='z'>&nbsp;</td>"
-      elif IsDifferent(row[1:]):
-        print "  <td class='d'>%d</td>" % sz
-      else:
-        print "  <td class='sz'>%d</td>" % sz
-    print "  <td class='fn'>%s</td>" % cgi.escape(row[0])
+    for input in inputs:
+        combo = input.split(os.path.sep)[1]
+        print "  <td class='fn'>%s</td>" % cgi.escape(combo)
     print "</tr>"
-  print "</table>"
-  print "</body></html>"
+
+    for row in rows:
+        print "<tr>"
+        for sz in row[1:]:
+            if not sz:
+                print "  <td class='z'>&nbsp;</td>"
+            elif IsDifferent(row[1:]):
+                print "  <td class='d'>%d</td>" % sz
+            else:
+                print "  <td class='sz'>%d</td>" % sz
+        print "  <td class='fn'>%s</td>" % cgi.escape(row[0])
+        print "</tr>"
+    print "</table>"
+    print "</body></html>"
+
 
 if __name__ == '__main__':
-  main(sys.argv)
-
-
+    main(sys.argv)

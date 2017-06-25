@@ -15,44 +15,52 @@
 # limitations under the License.
 #
 
-import json, hashlib, operator, os, sys
+import hashlib
+import json
+import operator
+import os
+import sys
+
 
 def get_file_size(path):
-  st = os.lstat(path)
-  return st.st_size;
+    st = os.lstat(path)
+    return st.st_size;
+
 
 def get_file_digest(path):
-  if os.path.isfile(path) == False:
-    return "----------------------------------------------------------------"
-  digest = hashlib.sha256()
-  with open(path, 'rb') as f:
-    while True:
-      buf = f.read(1024*1024)
-      if not buf:
-        break
-      digest.update(buf)
-  return digest.hexdigest();
+    if os.path.isfile(path) == False:
+        return "----------------------------------------------------------------"
+    digest = hashlib.sha256()
+    with open(path, 'rb') as f:
+        while True:
+            buf = f.read(1024 * 1024)
+            if not buf:
+                break
+            digest.update(buf)
+    return digest.hexdigest();
+
 
 def main(argv):
-  output = []
-  roots = argv[1:]
-  for root in roots:
-    base = len(root[:root.rfind(os.path.sep)])
-    for dir, dirs, files in os.walk(root):
-      relative = dir[base:]
-      for f in files:
-        try:
-          path = os.path.sep.join((dir, f))
-          row = {
-              "Size": get_file_size(path),
-              "Name": os.path.sep.join((relative, f)),
-              "SHA256": get_file_digest(path),
-            }
-          output.append(row)
-        except os.error:
-          pass
-  output.sort(key=operator.itemgetter("Size", "Name"), reverse=True)
-  print json.dumps(output, indent=2, separators=(',',': '))
+    output = []
+    roots = argv[1:]
+    for root in roots:
+        base = len(root[:root.rfind(os.path.sep)])
+        for dir, dirs, files in os.walk(root):
+            relative = dir[base:]
+            for f in files:
+                try:
+                    path = os.path.sep.join((dir, f))
+                    row = {
+                        "Size": get_file_size(path),
+                        "Name": os.path.sep.join((relative, f)),
+                        "SHA256": get_file_digest(path),
+                    }
+                    output.append(row)
+                except os.error:
+                    pass
+    output.sort(key=operator.itemgetter("Size", "Name"), reverse=True)
+    print json.dumps(output, indent=2, separators=(',', ': '))
+
 
 if __name__ == '__main__':
-  main(sys.argv)
+    main(sys.argv)

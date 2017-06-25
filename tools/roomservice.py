@@ -21,7 +21,6 @@ import json
 import netrc
 import os
 import sys
-
 from xml.etree import ElementTree
 
 try:
@@ -34,6 +33,7 @@ except ImportError:
     import imp
     import urllib2
     import urlparse
+
     urllib = imp.new_module('urllib')
     urllib.error = urllib2
     urllib.parse = urlparse
@@ -49,7 +49,6 @@ org_manifest = "purenexus-mod"  # leave empty if org is provided in manifest
 org_display = "PureNexusProject-Mod"  # needed for displaying
 
 github_auth = None
-
 
 local_manifests = '.repo/local_manifests'
 if not os.path.exists(local_manifests):
@@ -87,7 +86,7 @@ def indent(elem, level=0):
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            indent(elem, level+1)
+            indent(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:
@@ -108,6 +107,7 @@ def get_default(manifest=None):
     d = m.findall('default')[0]
     return d
 
+
 def get_remote(manifest=None, remote_name=None):
     m = manifest or load_manifest(default_manifest)
     if not remote_name:
@@ -116,6 +116,7 @@ def get_remote(manifest=None, remote_name=None):
     for remote in remotes:
         if remote_name == remote.get('name'):
             return remote
+
 
 def get_revision(manifest=None, p="build"):
     m = manifest or load_manifest(default_manifest)
@@ -160,21 +161,21 @@ def add_to_manifest(repos, fallback_branch=None):
         repo_name = repo['repository']
         repo_target = repo['target_path']
         if 'branch' in repo:
-            repo_branch=repo['branch']
+            repo_branch = repo['branch']
         else:
-            repo_branch=custom_default_revision
+            repo_branch = custom_default_revision
 
         if 'remote' in repo:
             repo_remote = repo['remote']
         else:
-            repo_remote=org_manifest
+            repo_remote = org_manifest
 
         if is_in_manifest(repo_target):
             print('already exists: %s' % repo_target)
             continue
 
         if repo_remote is None:
-            repo_remote="github"
+            repo_remote = "github"
 
         if "/" not in repo_name and repo_remote is not org_manifest:
             repo_name = os.path.join(org_display, repo_name)
@@ -205,6 +206,7 @@ def add_to_manifest(repos, fallback_branch=None):
     f = open(custom_local_manifest, 'w')
     f.write(raw_xml)
     f.close()
+
 
 _fetch_dep_cache = []
 
@@ -243,7 +245,9 @@ def fetch_dependencies(repo_path, fallback_branch=None):
 
     if syncable_repos:
         print('Syncing dependencies')
-        os.system('repo sync --force-sync --no-tags --current-branch --no-clone-bundle %s' % ' '.join(syncable_repos))
+        os.system(
+            'repo sync --force-sync --no-tags --current-branch --no-clone-bundle %s' % ' '.join(
+                syncable_repos))
 
     for deprepo in syncable_repos:
         fetch_dependencies(deprepo)
@@ -336,22 +340,23 @@ def main():
         repo_name = repository['name']
         cond = repo_name.startswith("android_device_") or repo_name.startswith("device_")
         if not (cond and
-                repo_name.endswith("_" + device)):
+                    repo_name.endswith("_" + device)):
             continue
         print("Found repository: %s" % repo_name)
 
         fallback_branch = detect_revision(repository)
         if (repo_name.startswith("android_device_")):
-            manufacturer = repo_name[15:-(len(device)+1)]
+            manufacturer = repo_name[15:-(len(device) + 1)]
         else:
-            manufacturer = repo_name[7:-(len(device)+1)]
+            manufacturer = repo_name[7:-(len(device) + 1)]
         repo_path = "device/%s/%s" % (manufacturer, device)
         adding = [{'repository': repo_name, 'target_path': repo_path}]
 
         add_to_manifest(adding, fallback_branch)
 
         print("Syncing repository to retrieve project.")
-        os.system('repo sync --force-sync --no-clone-bundle --current-branch --no-tags %s' % repo_path)
+        os.system(
+            'repo sync --force-sync --no-clone-bundle --current-branch --no-tags %s' % repo_path)
         print("Repository synced!")
 
         fetch_dependencies(repo_path, fallback_branch)
@@ -362,6 +367,7 @@ def main():
           % (device, org_display))
     print("If this is in error, you may need to manually add it to your "
           "%s" % custom_local_manifest)
+
 
 if __name__ == "__main__":
     main()

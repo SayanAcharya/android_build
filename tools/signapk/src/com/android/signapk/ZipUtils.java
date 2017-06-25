@@ -21,28 +21,27 @@ import java.nio.ByteOrder;
 
 /**
  * Assorted ZIP format helpers.
- *
+ * <p>
  * <p>NOTE: Most helper methods operating on {@code ByteBuffer} instances expect that the byte
  * order of these buffers is little-endian.
  */
 public abstract class ZipUtils {
-    private ZipUtils() {}
-
     private static final int ZIP_EOCD_REC_MIN_SIZE = 22;
     private static final int ZIP_EOCD_REC_SIG = 0x06054b50;
     private static final int ZIP_EOCD_CENTRAL_DIR_SIZE_FIELD_OFFSET = 12;
     private static final int ZIP_EOCD_CENTRAL_DIR_OFFSET_FIELD_OFFSET = 16;
     private static final int ZIP_EOCD_COMMENT_LENGTH_FIELD_OFFSET = 20;
-
     private static final int ZIP64_EOCD_LOCATOR_SIZE = 20;
     private static final int ZIP64_EOCD_LOCATOR_SIG = 0x07064b50;
-
     private static final int UINT16_MAX_VALUE = 0xffff;
+
+    private ZipUtils() {
+    }
 
     /**
      * Returns the position at which ZIP End of Central Directory record starts in the provided
      * buffer or {@code -1} if the record is not present.
-     *
+     * <p>
      * <p>NOTE: Byte order of {@code zipContents} must be little-endian.
      */
     public static int findZipEndOfCentralDirectoryRecord(ByteBuffer zipContents) {
@@ -65,7 +64,7 @@ public abstract class ZipUtils {
         int maxCommentLength = Math.min(archiveSize - ZIP_EOCD_REC_MIN_SIZE, UINT16_MAX_VALUE);
         int eocdWithEmptyCommentStartPosition = archiveSize - ZIP_EOCD_REC_MIN_SIZE;
         for (int expectedCommentLength = 0; expectedCommentLength < maxCommentLength;
-                expectedCommentLength++) {
+             expectedCommentLength++) {
             int eocdStartPos = eocdWithEmptyCommentStartPosition - expectedCommentLength;
             if (zipContents.getInt(eocdStartPos) == ZIP_EOCD_REC_SIG) {
                 int actualCommentLength =
@@ -83,7 +82,7 @@ public abstract class ZipUtils {
     /**
      * Returns {@code true} if the provided buffer contains a ZIP64 End of Central Directory
      * Locator.
-     *
+     * <p>
      * <p>NOTE: Byte order of {@code zipContents} must be little-endian.
      */
     public static final boolean isZip64EndOfCentralDirectoryLocatorPresent(
@@ -103,7 +102,7 @@ public abstract class ZipUtils {
 
     /**
      * Returns the offset of the start of the ZIP Central Directory in the archive.
-     *
+     * <p>
      * <p>NOTE: Byte order of {@code zipEndOfCentralDirectory} must be little-endian.
      */
     public static long getZipEocdCentralDirectoryOffset(ByteBuffer zipEndOfCentralDirectory) {
@@ -115,7 +114,7 @@ public abstract class ZipUtils {
 
     /**
      * Sets the offset of the start of the ZIP Central Directory in the archive.
-     *
+     * <p>
      * <p>NOTE: Byte order of {@code zipEndOfCentralDirectory} must be little-endian.
      */
     public static void setZipEocdCentralDirectoryOffset(
@@ -129,7 +128,7 @@ public abstract class ZipUtils {
 
     /**
      * Returns the size (in bytes) of the ZIP Central Directory.
-     *
+     * <p>
      * <p>NOTE: Byte order of {@code zipEndOfCentralDirectory} must be little-endian.
      */
     public static long getZipEocdCentralDirectorySizeBytes(ByteBuffer zipEndOfCentralDirectory) {

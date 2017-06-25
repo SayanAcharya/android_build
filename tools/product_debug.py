@@ -14,97 +14,105 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import re
 import sys
 
+
 def break_lines(key, val):
-  # these don't get split
-  if key in ("PRODUCT_MODEL"):
-    return (key,val)
-  return (key, "\n".join(val.split()))
+    # these don't get split
+    if key in ("PRODUCT_MODEL"):
+        return (key, val)
+    return (key, "\n".join(val.split()))
+
 
 def split_line(line):
-  words = line.split("=", 1)
-  if len(words) == 1:
-    return (words[0], "")
-  else:
-    return (words[0], words[1])
+    words = line.split("=", 1)
+    if len(words) == 1:
+        return (words[0], "")
+    else:
+        return (words[0], words[1])
+
 
 def sort_lines(text):
-  lines = text.split()
-  lines.sort()
-  return "\n".join(lines)
+    lines = text.split()
+    lines.sort()
+    return "\n".join(lines)
+
 
 def parse_variables(lines):
-  return [split_line(line) for line in lines if line.strip()]
+    return [split_line(line) for line in lines if line.strip()]
+
 
 def render_variables(variables):
-  variables = dict(variables)
-  del variables["FILE"]
-  variables = list(variables.iteritems())
-  variables.sort(lambda a, b: cmp(a[0], b[0]))
-  return ("<table id='variables'>"
-      + "\n".join([ "<tr><th>%(key)s</th><td>%(val)s</td></tr>" % { "key": key, "val": val }
-        for key,val in variables])
-      +"</table>")
+    variables = dict(variables)
+    del variables["FILE"]
+    variables = list(variables.iteritems())
+    variables.sort(lambda a, b: cmp(a[0], b[0]))
+    return ("<table id='variables'>"
+            + "\n".join(["<tr><th>%(key)s</th><td>%(val)s</td></tr>" % {"key": key, "val": val}
+                         for key, val in variables])
+            + "</table>")
+
 
 def linkify_inherit(variables, text, func_name):
-  groups = re.split("(\\$\\(call " + func_name + ",.*\\))", text)
-  result = ""
-  for i in range(0,len(groups)/2):
-    i = i * 2
-    result = result + groups[i]
-    s = groups[i+1]
-    href = s.split(",", 1)[1].strip()[:-1]
-    href = href.replace("$(SRC_TARGET_DIR)", "build/target")
-    href = ("../" * variables["FILE"].count("/")) + href + ".html"
-    result = result + "<a href=\"%s\">%s</a>" % (href,s)
-  result = result + groups[-1]
-  return result
+    groups = re.split("(\\$\\(call " + func_name + ",.*\\))", text)
+    result = ""
+    for i in range(0, len(groups) / 2):
+        i = i * 2
+        result = result + groups[i]
+        s = groups[i + 1]
+        href = s.split(",", 1)[1].strip()[:-1]
+        href = href.replace("$(SRC_TARGET_DIR)", "build/target")
+        href = ("../" * variables["FILE"].count("/")) + href + ".html"
+        result = result + "<a href=\"%s\">%s</a>" % (href, s)
+    result = result + groups[-1]
+    return result
+
 
 def render_original(variables, text):
-  text = linkify_inherit(variables, text, "inherit-product")
-  text = linkify_inherit(variables, text, "inherit-product-if-exists")
-  return text
+    text = linkify_inherit(variables, text, "inherit-product")
+    text = linkify_inherit(variables, text, "inherit-product-if-exists")
+    return text
+
 
 def read_file(fn):
-  f = file(fn)
-  text = f.read()
-  f.close()
-  return text
+    f = file(fn)
+    text = f.read()
+    f.close()
+    return text
+
 
 def main(argv):
-  # read the variables
-  lines = sys.stdin.readlines()
-  variables = parse_variables(lines)
+    # read the variables
+    lines = sys.stdin.readlines()
+    variables = parse_variables(lines)
 
-  # format the variables
-  variables = [break_lines(key,val) for key,val in variables]
+    # format the variables
+    variables = [break_lines(key, val) for key, val in variables]
 
-  # now it's a dict
-  variables = dict(variables)
+    # now it's a dict
+    variables = dict(variables)
 
-  sorted_vars = (
-      "PRODUCT_COPY_FILES",
-      "PRODUCT_PACKAGES",
-      "PRODUCT_LOCALES",
-      "PRODUCT_PROPERTY_OVERRIDES",
+    sorted_vars = (
+        "PRODUCT_COPY_FILES",
+        "PRODUCT_PACKAGES",
+        "PRODUCT_LOCALES",
+        "PRODUCT_PROPERTY_OVERRIDES",
     )
 
-  for key in sorted_vars:
-    variables[key] = sort_lines(variables[key])
+    for key in sorted_vars:
+        variables[key] = sort_lines(variables[key])
 
-  # the original file
-  original = read_file(variables["FILE"])
+    # the original file
+    original = read_file(variables["FILE"])
 
-  # formatting
-  values = dict(variables)
-  values.update({
-    "variables": render_variables(variables),
-    "original": render_original(variables, original),
-  })
-  print """<html>
+    # formatting
+    values = dict(variables)
+    values.update({
+        "variables": render_variables(variables),
+        "original": render_original(variables, original),
+    })
+    print """<html>
 
 
 <head>
@@ -155,5 +163,6 @@ def main(argv):
 </html>
 """ % values
 
+
 if __name__ == "__main__":
-  main(sys.argv)
+    main(sys.argv)

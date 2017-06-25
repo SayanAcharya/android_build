@@ -1,6 +1,8 @@
 #!/usr/bin/python -E
 
-import sys, os, re
+import os
+import re
+import sys
 
 excludes = [r'.*?/\.obj.*?',
             r'.*?~',
@@ -13,11 +15,13 @@ excludes = [r'.*?/\.obj.*?',
 
 excludes_compiled = map(re.compile, excludes)
 
+
 def filter_excludes(str):
     for e in excludes_compiled:
         if e.match(str):
             return False
     return True
+
 
 def split_perforce_parts(s):
     spaces = ((s.count(" ") + 1) / 3) * 2
@@ -27,15 +31,18 @@ def split_perforce_parts(s):
         spaces = spaces - 1
     return s[pos:]
 
+
 def quotate(s):
     return '"' + s + '"'
 
+
 class PerforceError(Exception):
-    def __init__(self,value):
+    def __init__(self, value):
         self.value = value
+
     def __str__(self):
         return repr(self.value)
-    
+
 
 def run(command, regex, filt):
     def matchit(s):
@@ -44,6 +51,7 @@ def run(command, regex, filt):
             return m.group(1)
         else:
             return ""
+
     def filterit(s):
         if filt_compiled.match(s):
             return True
@@ -55,7 +63,7 @@ def run(command, regex, filt):
     status = fd.close()
     if status:
         raise PerforceError("error calling " + command)
-        
+
     regex_compiled = re.compile(regex)
     filt_compiled = re.compile(filt)
 
@@ -64,6 +72,7 @@ def run(command, regex, filt):
         if len(lines) >= 1:
             return map(matchit, lines)
     return None
+
 
 try:
     if len(sys.argv) == 1:
@@ -79,7 +88,7 @@ try:
 
     cwd = os.getcwd()
     files = run("find . -not -type d", r'.(.*)', r'.*')
-    files = map(lambda s: cwd+s, files)
+    files = map(lambda s: cwd + s, files)
 
     added_depot_path = run("p4 opened ...", r'([^#]+)#.*', r'.*?#[0-9]+ - add .*');
     added = []
@@ -110,4 +119,3 @@ try:
 
 except PerforceError, e:
     sys.exit(2)
-

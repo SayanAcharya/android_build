@@ -15,54 +15,61 @@
 # limitations under the License.
 #
 
-import getopt, json, sys
+import getopt
+import json
+import sys
+
 
 def PrintFileNames(path):
-  with open(path) as jf:
-    data = json.load(jf)
-  for line in data:
-    print(line["Name"])
+    with open(path) as jf:
+        data = json.load(jf)
+    for line in data:
+        print(line["Name"])
+
 
 def PrintCanonicalList(path):
-  with open(path) as jf:
-    data = json.load(jf)
-  for line in data:
-    print "{0:12d}  {1}".format(line["Size"], line["Name"])
+    with open(path) as jf:
+        data = json.load(jf)
+    for line in data:
+        print "{0:12d}  {1}".format(line["Size"], line["Name"])
+
 
 def PrintUsage(name):
-  print("""
+    print("""
 Usage: %s -[nc] json_files_list
  -n produces list of files only
  -c produces classic installed-files.txt
 """ % (name))
 
+
 def main(argv):
-  try:
-    opts, args = getopt.getopt(argv[1:], "nc", "")
-  except getopt.GetoptError, err:
-    print(err)
-    PrintUsage(argv[0])
-    sys.exit(2)
+    try:
+        opts, args = getopt.getopt(argv[1:], "nc", "")
+    except getopt.GetoptError, err:
+        print(err)
+        PrintUsage(argv[0])
+        sys.exit(2)
 
-  if len(opts) == 0:
-    print("No conversion option specified")
-    PrintUsage(argv[0])
-    sys.exit(2)
+    if len(opts) == 0:
+        print("No conversion option specified")
+        PrintUsage(argv[0])
+        sys.exit(2)
 
-  if len(args) == 0:
-    print("No input file specified")
-    PrintUsage(argv[0])
-    sys.exit(2)
+    if len(args) == 0:
+        print("No input file specified")
+        PrintUsage(argv[0])
+        sys.exit(2)
 
-  for o, a in opts:
-    if o == ("-n"):
-      PrintFileNames(args[0])
-      sys.exit()
-    elif o == ("-c"):
-      PrintCanonicalList(args[0])
-      sys.exit()
-    else:
-      assert False, "Unsupported option"
+    for o, a in opts:
+        if o == ("-n"):
+            PrintFileNames(args[0])
+            sys.exit()
+        elif o == ("-c"):
+            PrintCanonicalList(args[0])
+            sys.exit()
+        else:
+            assert False, "Unsupported option"
+
 
 if __name__ == '__main__':
-  main(sys.argv)
+    main(sys.argv)

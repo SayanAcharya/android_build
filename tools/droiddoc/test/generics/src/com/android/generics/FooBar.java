@@ -16,14 +16,8 @@
 
 package com.android.generics;
 
-public class FooBar<K,V,L> extends Foo<V> implements Bar<K> {
-    public class C
-    {
-    }
-
-    public class CI extends C implements Iface
-    {
-    }
+public class FooBar<K, V, L> extends Foo<V> implements Bar<K> {
+    public V v;
 
     public FooBar(K k) {
         super(null);
@@ -33,19 +27,23 @@ public class FooBar<K,V,L> extends Foo<V> implements Bar<K> {
     public K bar(K arg) {
         return null;
     }
-    
-    public FooBar<K,? extends Foo,L> a(K arg) {
+
+    public FooBar<K, ? extends Foo, L> a(K arg) {
         return null;
     }
 
-    public FooBar<V,K,L> b(Bar<? extends K> arg) {
+    public FooBar<V, K, L> b(Bar<? extends K> arg) {
         return null;
     }
 
     public <L extends C & Iface> void f(L arg) {
     }
 
-    public V v;
+    public class C {
+    }
+
+    public class CI extends C implements Iface {
+    }
 }
 
 

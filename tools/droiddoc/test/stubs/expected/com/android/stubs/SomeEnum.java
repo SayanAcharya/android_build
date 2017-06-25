@@ -1,7 +1,7 @@
 package com.android.stubs;
-public enum SomeEnum
-{
-A(),
-B(),
-C();
+
+public enum SomeEnum {
+    A(),
+    B(),
+    C();
 }

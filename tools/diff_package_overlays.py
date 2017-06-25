@@ -36,56 +36,58 @@ Format of current_overlays.txt and previous_overlays.txt:
 
 import sys
 
+
 def main(argv):
-  if len(argv) != 4:
-    print >> sys.stderr, __doc__
-    sys.exit(1)
+    if len(argv) != 4:
+        print >> sys.stderr, __doc__
+        sys.exit(1)
 
-  f = open(argv[1])
-  all_packages = set(f.read().split())
-  f.close()
-
-  def load_overlay_config(filename):
-    f = open(filename)
-    result = {}
-    for line in f:
-      line = line.strip()
-      if not line or line.startswith("#"):
-        continue
-      words = line.split()
-      result[words[0]] = " ".join(words[1:])
-    f.close()
-    return result
-
-  current_overlays = load_overlay_config(argv[2])
-  previous_overlays = load_overlay_config(argv[3])
-
-  result = []
-  carryon = []
-  for p in current_overlays:
-    if p not in previous_overlays:
-      result.append(p)
-    elif current_overlays[p] != previous_overlays[p]:
-      result.append(p)
-  for p in previous_overlays:
-    if p not in current_overlays:
-      if p in all_packages:
-        # overlay changed
-        result.append(p)
-      else:
-        # we don't build p in the current build.
-        carryon.append(p)
-
-  # Add carryon to the current overlay config file.
-  if carryon:
-    f = open(argv[2], "a")
-    for p in carryon:
-      f.write(p + " " + previous_overlays[p] + "\n")
+    f = open(argv[1])
+    all_packages = set(f.read().split())
     f.close()
 
-  # Print out the package names that have overlay change.
-  for r in result:
-    print r
+    def load_overlay_config(filename):
+        f = open(filename)
+        result = {}
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            words = line.split()
+            result[words[0]] = " ".join(words[1:])
+        f.close()
+        return result
+
+    current_overlays = load_overlay_config(argv[2])
+    previous_overlays = load_overlay_config(argv[3])
+
+    result = []
+    carryon = []
+    for p in current_overlays:
+        if p not in previous_overlays:
+            result.append(p)
+        elif current_overlays[p] != previous_overlays[p]:
+            result.append(p)
+    for p in previous_overlays:
+        if p not in current_overlays:
+            if p in all_packages:
+                # overlay changed
+                result.append(p)
+            else:
+                # we don't build p in the current build.
+                carryon.append(p)
+
+    # Add carryon to the current overlay config file.
+    if carryon:
+        f = open(argv[2], "a")
+        for p in carryon:
+            f.write(p + " " + previous_overlays[p] + "\n")
+        f.close()
+
+    # Print out the package names that have overlay change.
+    for r in result:
+        print r
+
 
 if __name__ == "__main__":
-  main(sys.argv)
+    main(sys.argv)

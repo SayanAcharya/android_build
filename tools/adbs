@@ -14,32 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import os.path
-import re
-import string
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__) + "/../../development/scripts")
 import stack_core
-import symbol
 
 if __name__ == '__main__':
-  # pass the options to adb
-  adb_cmd  = "adb " + ' '.join(sys.argv[1:])
+    # pass the options to adb
+    adb_cmd = "adb " + ' '.join(sys.argv[1:])
 
-  # create tracer for line parsing
-  tracer = stack_core.TraceConverter()
+    # create tracer for line parsing
+    tracer = stack_core.TraceConverter()
 
-  # invoke the adb command and filter its output
-  stream = os.popen(adb_cmd)
-  while (True):
-    line = stream.readline()
-    if (line == ''):
-      break
-    if(tracer.ProcessLine(line) == False):
-      print(line.strip())
-      sys.stdout.flush()
+    # invoke the adb command and filter its output
+    stream = os.popen(adb_cmd)
+    while (True):
+        line = stream.readline()
+        if (line == ''):
+            break
+        if (tracer.ProcessLine(line) == False):
+            print(line.strip())
+            sys.stdout.flush()
 
-  # adb itself aborts
-  stream.close()
+    # adb itself aborts
+    stream.close()

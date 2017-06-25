@@ -17,7 +17,6 @@
 package com.android.stubs.b;
 
 import com.android.stubs.Parent;
-import com.android.stubs.a.A;
 
 public class B {
     Parent method(Parent p) {

@@ -36,17 +36,13 @@ import java.lang.reflect.Constructor;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyFactory;
-import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.Provider;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.Signature;
 import java.security.interfaces.ECKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.EncryptedPrivateKeyInfo;
@@ -57,13 +53,19 @@ import javax.crypto.spec.PBEKeySpec;
  * Signs Trusty images for use with operating systems that support it.
  */
 public class SignTos {
-    /** Size of the signature footer in bytes. */
+    /**
+     * Size of the signature footer in bytes.
+     */
     private static final int SIGNATURE_BLOCK_SIZE = 256;
 
-    /** Current signature version code we use. */
+    /**
+     * Current signature version code we use.
+     */
     private static final int VERSION_CODE = 1;
 
-    /** Size of the header on the file to skip. */
+    /**
+     * Size of the header on the file to skip.
+     */
     private static final int HEADER_SIZE = 512;
 
     private static BouncyCastleProvider sBouncyCastleProvider;
@@ -87,15 +89,15 @@ public class SignTos {
 
     /**
      * Decrypt an encrypted PKCS#8 format private key.
-     *
+     * <p>
      * Based on ghstark's post on Aug 6, 2006 at
      * http://forums.sun.com/thread.jspa?threadID=758133&messageID=4330949
      *
      * @param encryptedPrivateKey The raw data of the private key
-     * @param keyFile The file containing the private key
+     * @param keyFile             The file containing the private key
      */
     private static PKCS8EncodedKeySpec decryptPrivateKey(byte[] encryptedPrivateKey, File keyFile)
-        throws GeneralSecurityException {
+            throws GeneralSecurityException {
         EncryptedPrivateKeyInfo epkInfo;
         try {
             epkInfo = new EncryptedPrivateKeyInfo(encryptedPrivateKey);
@@ -120,7 +122,9 @@ public class SignTos {
         }
     }
 
-    /** Read a PKCS#8 format private key. */
+    /**
+     * Read a PKCS#8 format private key.
+     */
     private static PrivateKey readPrivateKey(File file) throws IOException,
             GeneralSecurityException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
@@ -236,7 +240,7 @@ public class SignTos {
         }
 
         int totalBytes = 0;
-        for (;;) {
+        for (; ; ) {
             int bytesRead = input.read(buffer);
             if (bytesRead == -1) {
                 break;
@@ -255,9 +259,9 @@ public class SignTos {
 
     private static void usage() {
         System.err.println("Usage: signtos " +
-                           "[-providerClass <className>] " +
-                           " privatekey.pk8 " +
-                           "input.img output.img");
+                "[-providerClass <className>] " +
+                " privatekey.pk8 " +
+                "input.img output.img");
         System.exit(2);
     }
 

@@ -1157,7 +1157,7 @@ FULL_SYSTEMIMAGE_DEPS := $(INTERNAL_SYSTEMIMAGE_FILES) $(INTERNAL_USERIMAGES_DEP
 INSTALLED_FILES_FILE := $(PRODUCT_OUT)/installed-files.txt
 $(INSTALLED_FILES_FILE): $(FULL_SYSTEMIMAGE_DEPS)
 	$(hide) ./vendor/pure/tools/changelog
-	$(hide) mv $(PRODUCT_OUT)/Changelog.txt $(PRODUCT_OUT)/purenexus_$(TARGET_PRODUCT)-$(PURE_VERSION)_changelog.txt
+	$(hide) mv $(PRODUCT_OUT)/Changelog.txt $(PRODUCT_OUT)/purefusion_$(TARGET_PRODUCT)-$(PURE_VERSION)_changelog.txt
 	@echo Installed file list: $@
 	@mkdir -p $(dir $@)
 	@rm -f $@
@@ -2145,33 +2145,33 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE)
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
-CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/purenexus_$(TARGET_PRODUCT)-$(PURE_VERSION).zip
+CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/purefusion_$(TARGET_PRODUCT)-$(PURE_VERSION).zip
 
-ZIP_LOCATION := /out/target/product/$(TARGET_PRODUCT)/purenexus_$(TARGET_PRODUCT)-$(PURE_VERSION).zip
+ZIP_LOCATION := /out/target/product/$(TARGET_PRODUCT)/purefusion_$(TARGET_PRODUCT)-$(PURE_VERSION).zip
 
 .PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
-	@echo -e ${CL_CYN}
-	@echo -e ""
-	@echo -e "                The"
-	@echo -e ""
-	@echo -e " ██████╗ ██╗   ██╗██████╗ ███████╗  ███╗   ██╗███████╗██╗  ██╗██╗   ██╗███████╗ "
-	@echo -e " ██╔══██╗██║   ██║██╔══██╗██╔════╝  ████╗  ██║██╔════╝╚██╗██╔╝██║   ██║██╔════╝ "
-	@echo -e " ██████╔╝██║   ██║██████╔╝█████╗    ██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║███████╗ "
-	@echo -e " ██╔═══╝ ██║   ██║██╔══██╗██╔══╝    ██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║╚════██║ "
-	@echo -e " ██║     ╚██████╔╝██║  ██║███████╗  ██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝███████║ "
-	@echo -e " ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝  ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝ "
-	@echo -e ""
-	@echo -e "                                                      Project"
-	@echo -e ""
-	@echo -e "ZIP: $(ZIP_LOCATION)"
-	@echo -e "SIZE: "`ls -hal $(CUSTOM_TARGET_PACKAGE) | cut -d ' ' -f 5`
-	@echo -e "MD5: "`cat $(CUSTOM_TARGET_PACKAGE).md5sum | cut -d ' ' -f 1`
-	@echo -e ${CL_RST}
-
+    $(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
+    $(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
+    @echo -e ${CL_CYN}
+    @echo -e ""
+    @echo -e "                The"
+    @echo -e ""
+    @echo -e "                                                                       "
+    @echo -e " ________                   __________             _____               "        
+    @echo -e " ___  __ \___  ________________  ____/___  ___________(_)____________  " 
+    @echo -e " __  /_/ /  / / /_  ___/  _ \_  /_   _  / / /_  ___/_  /_  __ \_  __ \ "
+    @echo -e " _  ____// /_/ /_  /   /  __/  __/   / /_/ /_(__  )_  / / /_/ /  / / / "
+    @echo -e " /_/     \__,_/ /_/    \___//_/      \__,_/ /____/ /_/  \____//_/ /_/  "                                                                 
+    @echo -e "                                                                       "
+    @echo -e ""
+    @echo -e "                                                               Project "
+    @echo -e ""
+    @echo -e "ZIP: $(ZIP_LOCATION)"
+    @echo -e "SIZE: "`ls -hal $(CUSTOM_TARGET_PACKAGE) | cut -d ' ' -f 5`
+    @echo -e "MD5: "`cat $(CUSTOM_TARGET_PACKAGE).md5sum | cut -d ' ' -f 1`
+    @echo -e ${CL_RST}
 
 endif    # build_ota_package
 # -----------------------------------------------------------------

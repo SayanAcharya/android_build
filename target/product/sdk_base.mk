@@ -25,6 +25,7 @@ PRODUCT_PACKAGES := \
 	EmulatorSmokeTests \
 	Fallback \
 	Gallery \
+	Launcher3 \
 	GestureBuilder \
 	LegacyCamera \
 	librs_jni \

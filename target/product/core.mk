@@ -28,6 +28,7 @@ PRODUCT_PACKAGES += \
     CaptivePortalLogin \
     CertInstaller \
     Contacts \
+    Launcher3 \
     DocumentsUI \
     DownloadProviderUi \
     ExactCalculator \

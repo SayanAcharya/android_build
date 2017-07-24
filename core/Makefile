@@ -2154,23 +2154,10 @@ otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
-	@echo -e ${CL_CYN}
-	@echo -e ""
-	@echo -e "                The"
-	@echo -e ""
-	@echo -e "                                                                       "
-	@echo -e " ________                   __________             _____               "        
-	@echo -e " ___  __ \___  ________________  ____/___  ___________(_)____________  " 
-	@echo -e " __  /_/ /  / / /_  ___/  _ \_  /_   _  / / /_  ___/_  /_  __ \_  __ \ "
-	@echo -e " _  ____// /_/ /_  /   /  __/  __/   / /_/ /_(__  )_  / / /_/ /  / / / "
-	@echo -e " /_/     \__,_/ /_/    \___//_/      \__,_/ /____/ /_/  \____//_/ /_/  "                                                                 
-	@echo -e "                                                                       "
-	@echo -e ""
-	@echo -e "                                                               Project "
-	@echo -e ""
-	@echo -e "ZIP: $(ZIP_LOCATION)"
-	@echo -e "SIZE: "`ls -hal $(CUSTOM_TARGET_PACKAGE) | cut -d ' ' -f 5`
-	@echo -e "MD5: "`cat $(CUSTOM_TARGET_PACKAGE).md5sum | cut -d ' ' -f 1`
+	$(hide) ./vendor/pure/tools/pf.sh
+	@echo -e ${CL_CYN}"ZIP: $(ZIP_LOCATION)"${CL_RST}
+	@echo -e ${CL_CYN}"SIZE: "`ls -hal $(CUSTOM_TARGET_PACKAGE) | cut -d ' ' -f 5`${CL_RST}
+	@echo -e ${CL_CYN}"MD5: "`cat $(CUSTOM_TARGET_PACKAGE).md5sum | cut -d ' ' -f 1`${CL_RST}
 	@echo -e ${CL_RST}
 
 endif    # build_ota_package

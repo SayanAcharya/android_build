@@ -213,6 +213,7 @@ def parse_dependency_file(location):
     try:
         with open(dep_location, 'r') as f:
             dependencies = json.loads(f.read())
+            print("Successfully loaded from dependency file")
     except ValueError:
         raise Exception("ERROR: Malformed dependency file")
     return dependencies
@@ -267,7 +268,7 @@ def create_dependency_manifest(dependencies):
 
 
 def create_common_dependencies_manifest(dependencies):
-    dep_file = "omni.dependencies"
+    dep_file = "fusion.dependencies"
     common_list = []
     if dependencies is not None:
         for dependency in dependencies:

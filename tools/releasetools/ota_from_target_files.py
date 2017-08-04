@@ -728,8 +728,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   system_progress = 0.75
 
-  if GetBuildProp("ro.pure.version", OPTIONS.info_dict) is not None:
-    buildid = GetBuildProp("ro.pure.version", OPTIONS.info_dict)
+  if GetBuildProp("ro.fusion.version", OPTIONS.info_dict) is not None:
+    buildid = GetBuildProp("ro.fusion.version", OPTIONS.info_dict)
     buildidn = GetBuildProp("ro.build.id", OPTIONS.info_dict)
     buildday = GetBuildProp("ro.build.date", OPTIONS.info_dict)
     securep = GetBuildProp("ro.build.version.security_patch", OPTIONS.info_dict)

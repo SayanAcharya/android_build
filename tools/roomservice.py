@@ -47,7 +47,7 @@ local_manifest_dir = ".repo/local_manifests"
 # change this to your name on github (or equivalent hosting)
 android_team = "FusionDevices"
 # url to gerrit repository
-gerrit_url = "review.aosnp.com"
+gerrit_url = "review.purefusionos.com"
 
 
 def check_repo_exists(git_data, device):

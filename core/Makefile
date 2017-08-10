@@ -2149,9 +2149,10 @@ CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/purefusion_$(TARGET_PRODUCT)-$(PURE_VERS
 
 ZIP_LOCATION := /out/target/product/$(TARGET_PRODUCT)/purefusion_$(TARGET_PRODUCT)-$(PURE_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage bacon pure
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-bacon: otapackage
+bacon: pure
+pure: otapackage
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
 	$(hide) ./vendor/pure/tools/pf.sh

@@ -749,7 +749,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.Print("");
     script.Print(" SDK ver: %s"%(sdkver));
     script.Print("");
-    script.Print(" Root status: Enabled");
+    script.Print(" Root status: Disabled");
     script.Print("");
     script.Print(" Build ID: %s"%(buildidn));
     script.Print("");

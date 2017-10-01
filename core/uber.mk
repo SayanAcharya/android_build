@@ -146,7 +146,7 @@ CUSTOM_FLAGS := -O3 -g0 -DNDEBUG
 ifneq ($(LOCAL_SDCLANG_LTO),true)
   ifeq ($(my_clang),true)
     ifndef LOCAL_IS_HOST_MODULE
-      CUSTOM_FLAGS += -fuse-ld=qcld
+      CUSTOM_FLAGS += -fuse-ld=gold
     else
       CUSTOM_FLAGS += -fuse-ld=gold
     endif
@@ -203,29 +203,32 @@ endif
 #################
 
 # Polly flags for use with Clang
-# POLLY := -O3 -mllvm -polly \
+ POLLY := -O3 -mllvm -polly \
 #  -mllvm -polly-parallel -lgomp \
-#  -mllvm -polly-ast-use-context \
-#  -mllvm -polly-vectorizer=stripmine \
-#  -mllvm -polly-opt-fusion=max \
-#  -mllvm -polly-opt-maximize-bands=yes \
-#  -mllvm -polly-run-dce \
-#  -mllvm -polly-position=after-loopopt \
-#  -mllvm -polly-run-inliner \
-#  -mllvm -polly-detect-keep-going \
-#  -mllvm -polly-opt-simplify-deps=no \
-#  -mllvm -polly-rtc-max-arrays-per-group=40
+  -mllvm -polly-ast-use-context \
+  -mllvm -polly-vectorizer=stripmine \
+  -mllvm -polly-opt-fusion=max \
+  -mllvm -polly-opt-maximize-bands=yes \
+  -mllvm -polly-run-dce \
+  -mllvm -polly-position=after-loopopt \
+  -mllvm -polly-run-inliner \
+  -mllvm -polly-detect-keep-going \
+  -mllvm -polly-opt-simplify-deps=no \
+  -mllvm -polly-dependences-computeout=0 \
+  -mllvm -polly-tiling=true \
+  -mllvm -polly-prevect-width=16 \
+  -mllvm -polly-vectorizer=polly \
+  -mllvm -polly-rtc-max-arrays-per-group=40
 
 
 #### UnUsed POLLY Options ####
-#  -mllvm -polly-dependences-computeout=0 \
-#  -mllvm -polly-tiling=true \
-#  -mllvm -polly-prevect-width=16 \
-#  -mllvm -polly-vectorizer=polly \
+
 
 # Disable modules that dont work with Polly. Split up by arch.
 DISABLE_POLLY_arm := \
         libicuuc \
+	libjni_imageutil \
+	libjni_snapcammosaic \
 	libandroid \
 	libcrypto \
         libcrypto_static \
@@ -300,16 +303,16 @@ ifeq ($(my_32_64_bit_suffix),32)
   endif
 endif
 
-#ifeq ($(my_clang),true)
-#  ifndef LOCAL_IS_HOST_MODULE
-#    # Possible conflicting flags will be filtered out to reduce argument
-#    # size and to prevent issues with locally set optimizations.
-#    my_cflags := $(filter-out -Wall -Werror -g -O3 -O2 -Os -O1 -O0 -Og -Oz -Wextra -Weverything,$(my_cflags))
-#    # Enable -O3 and Polly if not blacklisted, otherwise use -Os.
-#    my_cflags += $(POLLY) -Qunused-arguments -Wno-unknown-warning-option -w -fuse-ld=gold
-#    my_ldflags += -fuse-ld=gold
-#  endif
-#endif
+ifeq ($(my_clang),true)
+  ifndef LOCAL_IS_HOST_MODULE
+    # Possible conflicting flags will be filtered out to reduce argument
+    # size and to prevent issues with locally set optimizations.
+    my_cflags := $(filter-out -Wall -Werror -g -O3 -O2 -Os -O1 -O0 -Og -Oz -Wextra -Weverything,$(my_cflags))
+    # Enable -O3 and Polly if not blacklisted, otherwise use -Os.
+    my_cflags += $(POLLY) -Qunused-arguments -Wno-unknown-warning-option -w -fuse-ld=gold
+    my_ldflags += -fuse-ld=gold
+  endif
+endif
 
 ifneq (1,$(words $(filter $(DISABLE_POLLY_O3),$(LOCAL_MODULE))))
   # Remove all other "O" flags to set O3

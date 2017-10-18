@@ -340,7 +340,10 @@ if __name__ == '__main__':
 
     product = sys.argv[1]
     try:
-        device = product[product.index("_") + 1:]
+        if product.count('_') > 1:
+            device = product[product.index("_") + 1:]
+        else:
+            raise ValueError
     except ValueError:
         device = product
 

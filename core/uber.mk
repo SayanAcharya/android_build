@@ -229,6 +229,7 @@ DISABLE_POLLY_arm := \
         libicuuc \
 	libjni_imageutil \
 	libjni_snapcammosaic \
+	libjni_filtershow_filters \
 	libandroid \
 	libcrypto \
         libcrypto_static \

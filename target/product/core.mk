@@ -42,6 +42,7 @@ PRODUCT_PACKAGES += \
     PacProcessor \
     libpac \
     PrintSpooler \
+    SnapdragonCamera \
     PrintRecommendationService \
     ProxyHandler \
     Settings \
